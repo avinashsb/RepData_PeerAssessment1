@@ -10,7 +10,8 @@ This assignment makes use of data from a personal activity monitoring device. Th
 4. Next the date column is converted into Date type.
 
 
-```{r read_data, echo=TRUE}
+
+```r
 library(ggplot2) 
 
 
@@ -35,7 +36,8 @@ activityDataFinal <- readData()
 A histogram of the daily total number of steps taken (plotted with a bin interval of 1500 steps).
 
 
-```{r stepsPerDay, echo=TRUE}
+
+```r
   calculatedStepsPerDay <- function(activityDataFinal) {
     stepsPerDay <- aggregate(steps ~ date, activityDataFinal, sum)
     colnames(stepsPerDay) <- c("date", "steps")
@@ -61,9 +63,11 @@ medianSteps = round(median(stepsPerDay$steps), 2)
 plotStepsPerDay(stepsPerDay, meanSteps, medianSteps)
 ```
 
+![plot of chunk stepsPerDay](figure/stepsPerDay.png) 
+
 ### For the total number of steps taken/day:
-- **`r paste("Mean: ", meanSteps)`**
-- **`r paste("Median: ", medianSteps)`**
+- **Mean:  10766.19**
+- **Median:  10765**
 
 
 ## What is the average daily activity pattern?
@@ -72,7 +76,8 @@ A plot of the average daily pattern of the number of steps plotted against the i
 
 
 
-```{r stepsPerInterval, echo=TRUE}
+
+```r
 calculatedStepsPerInterval <- function(activityDataFinal) {
     stepsPerInterval <- aggregate(activityDataFinal$steps, by=list(interval=activityDataFinal$interval),
                           FUN=mean, na.rm=T)
@@ -100,13 +105,16 @@ maxStepInterval <- stepsPerInterval[which.max(stepsPerInterval$steps),]$interval
 plotActivityPattern(stepsPerInterval, maxStepInterval)
 ```
 
-The **`r maxStepInterval`th interval** has the maximum activity on the average.
+![plot of chunk stepsPerInterval](figure/stepsPerInterval.png) 
+
+The **835th interval** has the maximum activity on the average.
 
 ## Taking care of missing values
 
 
 
-```{r imputeData, echo=TRUE}
+
+```r
 imputeMeans <- function(activityDataFinal, defaults) {
     extractedNaIndices <- which(is.na(activityDataFinal$steps))
     defaults <- stepsPerInterval
@@ -125,23 +133,39 @@ completeActivityData <- data.frame(
 ```
 
 ## Summarizing the processed dataset :
-```{r impute_summary, echo=TRUE}
+
+```r
 summary(completeActivityData)
+```
+
+```
+##      steps            date               interval    
+##  Min.   :  0.0   Min.   :2012-10-01   0      :   61  
+##  1st Qu.:  0.0   1st Qu.:2012-10-16   5      :   61  
+##  Median :  0.0   Median :2012-10-31   10     :   61  
+##  Mean   : 37.4   Mean   :2012-10-31   15     :   61  
+##  3rd Qu.: 27.0   3rd Qu.:2012-11-15   20     :   61  
+##  Max.   :806.0   Max.   :2012-11-30   25     :   61  
+##                                       (Other):17202
 ```
 
 A histogram of the daily total number of steps taken, plotted with a bin interval of 1500 steps.
 
-```{r completeStepsPerDay, echo=TRUE}
+
+```r
 completeStepsPerDay <- calculatedStepsPerDay(completeActivityData)
 completeMeanSteps = round(mean(completeStepsPerDay$steps), 2)
 complete_median_steps = round(median(completeStepsPerDay$steps), 2)
 plotStepsPerDay(completeStepsPerDay, completeMeanSteps, complete_median_steps)
 ```
 
+![plot of chunk completeStepsPerDay](figure/completeStepsPerDay.png) 
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r weekday_compare, echo=TRUE}
+
+```r
 dayOfWeekData <- function(activityDataFinal) {
     activityDataFinal$weekday <- as.factor(weekdays(activityDataFinal$date))
     weekendData <- subset(activityDataFinal, weekday %in% c("Saturday","Sunday"))
@@ -168,3 +192,5 @@ dayOfWeekComparisionPlot <- function(dow_data) {
 dayOfWeekData <- dayOfWeekData(completeActivityData)
 dayOfWeekComparisionPlot(dayOfWeekData)
 ```
+
+![plot of chunk weekday_compare](figure/weekday_compare.png) 
